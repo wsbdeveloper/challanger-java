@@ -11,6 +11,9 @@ public class PartnerRepository {
         this.sector = sector;
     }
 
+    public PartnerRepository() {
+    }
+
     public int getPatnerId() {
         return patnerId;
     }
