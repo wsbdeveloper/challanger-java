@@ -1,6 +1,8 @@
 package com.br.foodsave.backend.infrastructure.repository.dao;
 
 import com.br.foodsave.backend.infrastructure.repository.PartnerRepository;
+import jakarta.servlet.http.Part;
+import org.hibernate.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -43,7 +45,16 @@ public class PartnerDAOImp implements PartnerDAO<PartnerRepository>{
 
     @Override
     public Optional<PartnerRepository> get(int id) {
-        return Optional.empty();
+        String query = "SELECT partner_id, name FROM partner WHERE partner_id = ?";
+        PartnerRepository partnerDao = null;
+
+        try {
+            partnerDao = jdbcTemplate.queryForObject(query, new Object[]{id}, rowMapper);
+        } catch (DataException ex) {
+            log.info("Parceiro não encontrado: " + id);
+        }
+
+        return Optional.ofNullable(partnerDao);
     }
 
     @Override
