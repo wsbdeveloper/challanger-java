@@ -59,6 +59,7 @@ public class PartnerDAOImp implements PartnerDAO<PartnerRepository>{
 
     @Override
     public void delete(int id) {
-
+        String query = "delete from partner where partner_id = ?";
+        jdbcTemplate.update(query, id);
     }
 }
