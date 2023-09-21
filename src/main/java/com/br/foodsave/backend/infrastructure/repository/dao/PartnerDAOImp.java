@@ -30,7 +30,8 @@ public class PartnerDAOImp implements PartnerDAO<PartnerRepository>{
 
     @Override
     public void create(PartnerRepository partnerRepository) {
-        return;
+        String query = "INSERT INTO partner(name, sector) values (? , ?)";
+        jdbcTemplate.update(query, partnerRepository.getName(), partnerRepository.getSector());
     }
 
     @Override
