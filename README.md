@@ -32,4 +32,9 @@ Verifique se a porta **5432/tcp** está sendo utilizada, se caso estiver mude pa
 docker-compose up
 ```
 
+## Swagger UI
+
+![Screenshot](docs/swagger.png)
+
+
 
