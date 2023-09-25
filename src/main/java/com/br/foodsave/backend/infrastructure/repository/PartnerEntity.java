@@ -1,25 +1,30 @@
 package com.br.foodsave.backend.infrastructure.repository;
 
-public class PartnerRepository {
-    private int patnerId;
+import jakarta.validation.constraints.NotBlank;
+
+public class PartnerEntity {
+    private int partnerId;
+
+    @NotBlank
     private String name;
+    @NotBlank
     private String sector;
 
-    public PartnerRepository(int patnerId, String name, String sector) {
-        this.patnerId = patnerId;
+    public PartnerEntity(int partnerId, String name, String sector) {
+        this.partnerId = partnerId;
         this.name = name;
         this.sector = sector;
     }
 
-    public PartnerRepository() {
+    public PartnerEntity() {
     }
 
-    public int getPatnerId() {
-        return patnerId;
+    public int getPartnerId() {
+        return partnerId;
     }
 
-    public void setPatnerId(int patnerId) {
-        this.patnerId = patnerId;
+    public void setPartnerId(int partnerId) {
+        this.partnerId = partnerId;
     }
 
     public String getName() {
@@ -41,9 +46,13 @@ public class PartnerRepository {
     @Override
     public String toString() {
         return "PatnerRepository{" +
-                "patnerId=" + patnerId +
+                "patnerId=" + partnerId +
                 ", name='" + name + '\'' +
                 ", sector='" + sector + '\'' +
                 '}';
+    }
+
+    public String info(String message) {
+        return message;
     }
 }

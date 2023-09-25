@@ -1,25 +1,28 @@
 package com.br.foodsave.backend.infrastructure.repository.dao;
 
-import com.br.foodsave.backend.infrastructure.repository.PartnerRepository;
-import jakarta.servlet.http.Part;
+import com.br.foodsave.backend.infrastructure.repository.PartnerEntity;
 import org.hibernate.exception.DataException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Optional;
 
 @Component
-public class PartnerDAOImp implements PartnerDAO<PartnerRepository>{
+public class PartnerDAOImp implements PartnerDAO<PartnerEntity>{
     private static final Logger log = LoggerFactory.getLogger(PartnerDAOImp.class);
     private JdbcTemplate jdbcTemplate;
 
-    RowMapper<PartnerRepository> rowMapper = (rs, rowNum) -> {
-        PartnerRepository partner = new PartnerRepository();
-        partner.setPatnerId(rs.getInt("partner_id"));
+    RowMapper<PartnerEntity> rowMapper = (rs, rowNum) -> {
+        PartnerEntity partner = new PartnerEntity();
+        partner.setPartnerId(rs.getInt("partner_id"));
         partner.setName(rs.getString("name"));
         partner.setSector(rs.getString("sector"));
 
@@ -31,22 +34,49 @@ public class PartnerDAOImp implements PartnerDAO<PartnerRepository>{
     }
 
     @Override
-    public void create(PartnerRepository partnerRepository) {
-        String query = "INSERT INTO partner(name, sector) values (? , ?)";
-        jdbcTemplate.update(query, partnerRepository.getName(), partnerRepository.getSector());
+    public PartnerEntity create(PartnerEntity partnerEntity) {
+        String query = "INSERT INTO partner(name, sector) VALUES (?, ?)";
+
+        // Gerenciador do ID retornado do INSERT
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(con -> {
+            PreparedStatement ps = con.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            ps.setString(1, partnerEntity.getName());
+            ps.setString(2, partnerEntity.getSector());
+            return ps;
+        }, keyHolder);
+
+        // Atribuindo a generatedID o id retornado
+        Long generatedId = keyHolder.getKey().longValue();
+
+        String selectQuery = "SELECT partner_id, name, sector FROM partner WHERE partner_id = ?";
+        PartnerEntity updatedPartnerEntity = jdbcTemplate.queryForObject(
+                selectQuery,
+                new Object[]{generatedId},
+                (rs, rowNum) -> {
+                    PartnerEntity entity = new PartnerEntity();
+                    entity.setName(rs.getString("name"));
+                    entity.setSector(rs.getString("sector"));
+                    entity.setPartnerId(rs.getInt("partner_id"));
+                    return entity;
+                }
+        );
+
+        return updatedPartnerEntity;
     }
 
     @Override
-    public List<PartnerRepository> list() {
+    public List<PartnerEntity> list() {
         String query = "SELECT partner_id, name, sector FROM partner";
 
         return jdbcTemplate.query(query, rowMapper);
     }
 
     @Override
-    public Optional<PartnerRepository> get(int id) {
-        String query = "SELECT partner_id, name FROM partner WHERE partner_id = ?";
-        PartnerRepository partnerDao = null;
+    public Optional<PartnerEntity> get(int id) {
+        String query = "SELECT partner_id, name, sector FROM partner WHERE partner_id = ?";
+        PartnerEntity partnerDao = null;
 
         try {
             partnerDao = jdbcTemplate.queryForObject(query, new Object[]{id}, rowMapper);
