@@ -88,8 +88,10 @@ public class PartnerDAOImp implements PartnerDAO<PartnerEntity>{
     }
 
     @Override
-    public void delete(int id) {
+    public boolean delete(int id) {
         String query = "delete from partner where partner_id = ?";
-        jdbcTemplate.update(query, id);
+        int rows = jdbcTemplate.update(query, id);
+
+        return rows > 0;
     }
 }

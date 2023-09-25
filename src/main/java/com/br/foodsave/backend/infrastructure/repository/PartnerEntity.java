@@ -2,7 +2,9 @@ package com.br.foodsave.backend.infrastructure.repository;
 
 import jakarta.validation.constraints.NotBlank;
 
-public class PartnerEntity {
+import java.io.Serializable;
+
+public class PartnerEntity implements Serializable {
     private int partnerId;
 
     @NotBlank
@@ -12,6 +14,11 @@ public class PartnerEntity {
 
     public PartnerEntity(int partnerId, String name, String sector) {
         this.partnerId = partnerId;
+        this.name = name;
+        this.sector = sector;
+    }
+
+    public PartnerEntity(String name, String sector) {
         this.name = name;
         this.sector = sector;
     }

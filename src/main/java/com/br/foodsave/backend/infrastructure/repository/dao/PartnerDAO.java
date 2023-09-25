@@ -12,5 +12,5 @@ public interface PartnerDAO<T> {
 
     Optional<T> get(int id);
 
-    void delete(int id);
+    boolean delete(int id);
 }

@@ -41,14 +41,23 @@ public class PartnerController {
         try {
             Optional<PartnerEntity> consult = partnerService.get(id);
 
-            return ResponseEntity.ok(consult.get());
+            if (consult.isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
+            return ResponseEntity.ok(consult);
         } catch (EmptyResultDataAccessException err){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new PartnerEntity().info("Id Não Encontrado! Cadastre algum parceiro e volte a consultar."));
         }
     }
 
     @DeleteMapping
-    void delete(@RequestParam(name = "id") int id){
-        partnerService.deletePartner(id);
+    ResponseEntity delete(@RequestParam(name = "id") int id){
+        var delete = partnerService.deletePartner(id);
+
+        if (!delete){
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok().build();
     }
 }
